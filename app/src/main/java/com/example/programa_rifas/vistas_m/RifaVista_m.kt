@@ -70,5 +70,8 @@ class RifaViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+ 
+
+
 }
 

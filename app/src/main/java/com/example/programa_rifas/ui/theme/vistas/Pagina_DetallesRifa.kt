@@ -19,6 +19,7 @@ import com.example.programa_rifas.base_de_datos.entidades.NumeroSeleccionado
 import com.example.programa_rifas.vistas_m.RifaViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun Pagina_DetallesRifa(navController: NavController, rifaId: Int) {
@@ -30,7 +31,6 @@ fun Pagina_DetallesRifa(navController: NavController, rifaId: Int) {
     var numeroGanadorTexto by remember { mutableStateOf(TextFieldValue()) }
     val ganadorNombre = viewModel.ganadorNombre.value
 
-
     LaunchedEffect(Unit) {
         val yaOcupados = viewModel.obtenerNumeros(rifaId).map { it.numero }
         numerosSeleccionados.addAll(yaOcupados)
@@ -39,50 +39,79 @@ fun Pagina_DetallesRifa(navController: NavController, rifaId: Int) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
+            .background(Color(0xFFFFF3E0)) // Fondo crema suave
+            .padding(35.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Números Disponibles", style = MaterialTheme.typography.headlineMedium)
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFD7CCC8)),
+            modifier = Modifier
+                .padding(bottom = 16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                "Números de la Rifa",
+                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                color = Color(0xFF4E342E),
+                modifier = Modifier.padding(5.dp)
+            )
+        }
+
         OutlinedTextField(
             value = numeroGanadorTexto,
             onValueChange = { numeroGanadorTexto = it },
-            label = { Text("Número ganador") }
+            label = { Text("Número ganador") },
+            modifier = Modifier.fillMaxWidth()
         )
-        Button(onClick = {
-            val numero = numeroGanadorTexto.text.toIntOrNull()
-            numero?.let { viewModel.seleccionarGanadorPorNumero(it, rifaId) }
-        }) {
-            Text("Mostrar Ganador")
-        }
-        ganadorNombre?.let {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text("🎉 Ganador: $it 🎉", style = MaterialTheme.typography.titleMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+        Button(
+            onClick = {
+                val numero = numeroGanadorTexto.text.toIntOrNull()
+                numero?.let { viewModel.seleccionarGanadorPorNumero(it, rifaId) }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF8D6E63))
+        ) {
+            Text("Mostrar Ganador", color = Color.White) //Botón que al clickear muestra el ganador
         }
 
+        ganadorNombre?.let { // Esta parte muestra el ganador de la rifa
+            Spacer(modifier = Modifier.height(12.dp))
+            Text("🎉 Ganador: $it 🎉", style = MaterialTheme.typography.titleMedium, color = Color(0xFF4E342E))
+        }
 
         Spacer(modifier = Modifier.height(16.dp))
         LazyVerticalGrid(columns = GridCells.Fixed(8), modifier = Modifier.weight(1f)) {
             items(100) { i ->
                 val ocupado = numerosSeleccionados.contains(i)
-                Box(
+                Box(  //Esto es código que modifica el estilo de las celdas cuidado con darle numeros grandes
                     modifier = Modifier
                         .padding(2.dp)
-                        .background(if (ocupado) Color.LightGray else Color.Green)
+                        .background(
+                            color = if (ocupado) Color(0xFFD7CCC8) else Color(0xFF81C784),
+                            shape = MaterialTheme.shapes.medium
+                        )
                         .clickable(enabled = !ocupado) {
                             numeroSeleccionado.intValue = i
                             showDialog.value = true
                         }
-                        .size(36.dp),
+                        .size(40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(if (i < 10) "0$i" else "$i", color = Color.White)
+                    Text(
+                        if (i < 10) "0$i" else "$i",
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(onClick = { navController.popBackStack() }) {
-            Text("Volver")
+
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = { navController.popBackStack() },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6D4C41))
+        ) {
+            Text("Volver", color = Color.White)
         }
     }
 
@@ -91,13 +120,12 @@ fun Pagina_DetallesRifa(navController: NavController, rifaId: Int) {
             onDismissRequest = { showDialog.value = false },
             title = { Text("Registrar número ${numeroSeleccionado.intValue}") },
             text = {
-                Column {
-                    OutlinedTextField(
-                        value = nombreUsuario.value,
-                        onValueChange = { nombreUsuario.value = it },
-                        label = { Text("Nombre del usuario") }
-                    )
-                }
+                OutlinedTextField(
+                    value = nombreUsuario.value,
+                    onValueChange = { nombreUsuario.value = it },
+                    label = { Text("Nombre del usuario") },
+                    modifier = Modifier.fillMaxWidth()
+                )
             },
             confirmButton = {
                 TextButton(onClick = {
