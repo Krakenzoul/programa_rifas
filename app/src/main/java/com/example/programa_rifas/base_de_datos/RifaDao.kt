@@ -17,4 +17,12 @@ interface RifaDao {
 
     @Query("SELECT * FROM numeros WHERE rifaId = :rifaId")
     suspend fun getNumerosPorRifa(rifaId: Int): List<NumeroSeleccionado>
+
+    @Query("DELETE FROM rifas WHERE id = :rifaId")
+    suspend fun deleteRifa(rifaId: Int)
+
+    @Query("SELECT * FROM rifas WHERE nombre LIKE '%' || :query || '%'")
+    suspend fun buscarRifasPorNombre(query: String): List<RifaEntity>
+
+
 }

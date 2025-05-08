@@ -54,5 +54,21 @@ class RifaViewModel(application: Application) : AndroidViewModel(application) {
             ganadorNombre.value = numeroGanador?.nombreUsuario ?: "Número no registrado"
         }
     }
+
+    fun buscarRifas(query: String) {
+        viewModelScope.launch {
+            val listaFiltrada = dao.buscarRifasPorNombre(query)
+            rifas.clear()
+            rifas.addAll(listaFiltrada)
+        }
+    }
+
+    fun eliminarRifa(rifaId: Int) {
+        viewModelScope.launch {
+            dao.deleteRifa(rifaId)
+            cargarRifas()
+        }
+    }
+
 }
 

@@ -1,5 +1,7 @@
 package com.example.programa_rifas.ui.theme.vistas
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -16,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 @Composable
 fun Pagina_Principal(navController: NavController, viewModel: RifaViewModel = viewModel()) {
     val rifas = viewModel.rifas
+    var textoBusqueda by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.cargarRifas()
@@ -23,25 +26,56 @@ fun Pagina_Principal(navController: NavController, viewModel: RifaViewModel = vi
 
     Column(modifier = Modifier.padding(16.dp)) {
         Text("Rifas", style = MaterialTheme.typography.headlineMedium)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Campo de búsqueda
+        OutlinedTextField(
+            value = textoBusqueda,
+            onValueChange = {
+                textoBusqueda = it
+                viewModel.buscarRifas(it)
+            },
+            label = { Text("Buscar rifa") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
         Spacer(modifier = Modifier.height(16.dp))
+
         Button(onClick = { navController.navigate("create") }) {
             Text("Nueva Rifa")
         }
+
         Spacer(modifier = Modifier.height(16.dp))
+
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             items(rifas) { rifa ->
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
-                        .clickable { navController.navigate("detail/${rifa.id}") }
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(rifa.nombre, style = MaterialTheme.typography.titleMedium)
-                        Text("Fecha: ${rifa.fecha}", style = MaterialTheme.typography.bodySmall)
+                    Row(
+                        modifier = Modifier
+                            .padding(16.dp)
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clickable { navController.navigate("detail/${rifa.id}") }
+                        ) {
+                            Text(rifa.nombre, style = MaterialTheme.typography.titleMedium)
+                            Text("Fecha: ${rifa.fecha}", style = MaterialTheme.typography.bodySmall)
+                        }
+
+                        IconButton(onClick = { viewModel.eliminarRifa(rifa.id) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Eliminar")
+                        }
                     }
                 }
             }
         }
     }
 }
+
