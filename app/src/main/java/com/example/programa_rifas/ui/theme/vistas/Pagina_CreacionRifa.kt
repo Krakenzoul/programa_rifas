@@ -13,6 +13,9 @@ import java.util.Calendar
 import android.app.DatePickerDialog
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.graphics.Color
+import com.example.programa_rifas.ui.theme.Brown
+
 
 @Composable
 fun Pagina_CreacionRifa(navController: NavController, viewModel: RifaViewModel = viewModel()) {
@@ -33,7 +36,7 @@ fun Pagina_CreacionRifa(navController: NavController, viewModel: RifaViewModel =
         calendario.get(Calendar.DAY_OF_MONTH)
     )
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier.padding(55.dp)) {
         Text("Crear nueva Rifa", style = MaterialTheme.typography.headlineMedium)
         OutlinedTextField(
             value = nombre,
@@ -53,18 +56,24 @@ fun Pagina_CreacionRifa(navController: NavController, viewModel: RifaViewModel =
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Button(onClick = { datePickerDialog.show() }) {
+        Button(
+            onClick = { datePickerDialog.show() },
+            colors = ButtonDefaults.buttonColors(containerColor = Brown) //Defini Brown ya muy tarde en Color.kt, debe haber valores de este color en hexadecimal por ahí
+        ) {
             Text("Probar calendario")
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = {
-            if (nombre.isNotBlank() && fechaSeleccionada.value.isNotBlank()) {
-                viewModel.guardarRifa(
-                    RifaEntity(nombre = nombre, fecha = fechaSeleccionada.value)
-                )
-                navController.popBackStack()
-            }
-        }) {
+        Button(
+            onClick = {
+                if (nombre.isNotBlank() && fechaSeleccionada.value.isNotBlank()) {
+                    viewModel.guardarRifa(
+                        RifaEntity(nombre = nombre, fecha = fechaSeleccionada.value)
+                    )
+                    navController.popBackStack()
+                }
+            },
+            colors = ButtonDefaults.buttonColors(containerColor = Brown)
+        ) {
             Text("Guardar")
         }
     }
